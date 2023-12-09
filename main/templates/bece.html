@@ -1,0 +1,203 @@
+{% extends "base.html "%}
+
+ {% block title %} Calculate BECE results {% endblock %}
+
+ {% block content %}
+    
+    <div class="nav">
+        <span>Hi {{user}}</span>
+        <div id="header"><h1>BECE RESULT CALCULATOR</h1></div>
+        <span><a href="{% url 'logout' %}">Log out</a></span>
+        <span><a href="{% url 'home' %}">Home</a></span>
+    </div>
+
+    <p>{{ls}}</p>
+
+    <hr>
+    
+    <div id="inputSection">
+        <!--This section is use to input or select the subjects and their respective grades-->
+        <!--Make a form for submission of the subject and their respective grades into the Database-->
+        <!--
+
+            1.Make a dropdown with the select tag and attr-groupoption and enter all the subjects (Cores and Electives).
+            2.Make a dropdown with the select tag to show the grade points from 1-9.
+            3. Make a submit button to sync all these data into the database and to be displayed on the "infoSection"
+
+        -->
+
+        <form action="" method="post">
+            {% csrf_token %}
+            <!--Dropdown for Subjects-->
+            <label for="subj">Subject:</label>
+            <select name="subject" id="subj">
+
+                <option selected disabled=true >Select Subjects</option>
+                <optgroup label="Core Subjects">
+                    {% for item in pointer %}
+                        {% if item.subj_type == "core" %}
+                            <option value="{{item.subj_name}}">{{item.subj_name}}</option>
+                        {% endif %}
+                    {% endfor %}
+                    
+                </optgroup>
+
+                <optgroup label="Elective Subjects">
+                    {% for item in pointer %}
+                        {% if item.subj_type == "elective" %}
+                            <option value="{{item.subj_name}}">{{item.subj_name}}</option>
+                        {% endif %}
+                    {% endfor %}
+                    
+                </optgroup>
+                
+            </select>
+            <!--Dropdown for Gradess-->
+            <label for="grad">Grades:</label>
+            <select name="grade" id="grad">
+                <option disabled selected> Select Grade</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                
+            </select>
+
+            <button type="submit" name="add" value=1 >ADD</button>
+        </form>
+
+    </div>
+
+    <hr>
+    <div id="infoSection">
+        <!--This section is the preview of the selected subject and grades for any checks and corrections-->
+
+        <p>This is the info Section</p>
+        
+        <form action="" method="post">
+            {% csrf_token %}
+        
+        <div id="previewTable">
+            
+            <table>
+                <tr>
+                        <th>Subject</th>
+                        <th>Grade</th>
+                        <th>Remove</th>
+                    </tr>
+                    <tr>
+                        <th>Core Subjects</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    {% for item in pointer %}
+                        {% if item.subj_type == "core" and item.subj_add %}
+                            <tr>
+                                <td>{{item.subj_name}}</td>
+                                <td>{{item.subj_grade}}</td>
+                                <td><input type="checkbox" name="remove{{item.id}}" value="remove"></td>
+                                
+                            </tr>
+                            {% endif %}
+                        {% endfor %}          
+                            
+                    <tr>
+                        <th>Elective Subjects</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    {% for item in pointer %}
+                        {% if item.subj_type == "elective" and item.subj_add %}
+                            <tr>
+                                <td>{{item.subj_name}}</td>
+                                <td>{{item.subj_grade}}</td>
+                                <td><input type="checkbox" name="remove{{item.id}}" value="remove"></td>
+                               
+                            </tr>
+                            {% endif %}
+                        {% endfor %}
+                </table>
+    
+            </div>
+            
+            <div>
+                <button type="submit" name="calculate" value="calculate">Calculate Grade</button>
+                <button type="submit" name="remove" value="remove">Remove Checked</button>
+                <button type="submit" name="clean" value="clean">Clean all</button>
+            </div>
+        </form>
+
+
+    </div>
+
+    <hr>
+    <div id="results">
+        <!--This section is there  the calculated results will be posted-->
+
+        <p>This is the results Section</p>
+
+        <div id="resultTable">
+
+            <table>
+                <tr>
+                    <th>Subject</th>
+                    <th>Grade</th>
+                </tr>
+                <tr>
+                    <th>Core Subjects</th>
+                    <th></th>
+                    
+                </tr>
+                {% for item in pointer %}
+                    {% if item.subj_type == "core" and item.subj_add %}
+                    <tr>
+                        <td>{{item.subj_name}}</td>
+                        <td>{{item.subj_grade}}</td>
+                    </tr>
+                    {% endif %}
+                {% endfor %}
+                <tr>
+                    <th>Total Core Grade</th>
+                    <td>{{core_grade}}</td>
+                </tr>
+                <tr>
+                    <th>Elective Subjects</th>
+                    <th></th>
+                    
+                </tr>
+                {% for x, y in elect.items %}
+                    
+                    <tr>
+                        <td>{{x}}</td>
+                        <td>{{y}}</td>
+                    </tr>
+                   
+                {% endfor %}
+                <tr>
+                    <th>Total Elective Grade</th>
+                    <td>{{elect_grade}}</td>
+                </tr>
+                <tr>
+                    <th>Total Grade</th>
+                    <td>{{t_grade}}</td>
+                </tr>
+            </table>
+
+        </div>
+
+        <div id="comment" > 
+            <p>Comment about the Grade here:</p>
+            <p>Please, You got aggregate {{t_grade}} in your BECE examination.</p>
+            <p>Congratulation.</p>
+        </div>
+
+    </div>
+    <hr>
+
+ 
+ {% endblock %}

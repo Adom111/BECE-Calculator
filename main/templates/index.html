@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %} Home {% endblock %}
+
+{% block content %}
+
+    <h1>Welcome My BECE Calculator </h1>
+
+    {% if request.user.is_authenticated %}
+        <h4>Hello {{request.user.username}}</h4>
+        <p>Click <a href="bece">HERE</a> to calculate your BECE grade.</p>
+        <p>Log out <a href="logout/">HERE</a></p>
+    {% else %}
+        <p><a href="signup/">Create an account</a> to calculate your BECE grade.</p>
+        <p>If you already have an account, Log in <a href="login/">here</a>.</p>
+
+    {% endif %}
+
+{% endblock %}
